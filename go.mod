@@ -1,6 +1,6 @@
 module github.com/abakum/pageant
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/Microsoft/go-winio v0.6.1
