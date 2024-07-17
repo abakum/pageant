@@ -12,7 +12,7 @@ This repository contains a library for Go that provides a native
 [PuTTY][putty] Pageant SSH agent implementation compatible with the
 [golang.org/x/crypto/ssh/agent][go-ssh-agent] package.
 
-This package, rather unsuprisingly, only works with Windows.
+This package, works with Windows and Unix/Linux platforms.
 See below for alternatives on Unix/Linux platforms. 
 
 [putty]: https://www.chiark.greenend.org.uk/~sgtatham/
@@ -34,12 +34,9 @@ func main() {
 	}
 	defer agentConn.Close()
 	sshAgent := agent.NewClient(agentConn)
-	signers, err := sshAgent.Signers()
-	if err != nil {
-		// failed to get signers from Pageant
-	}
+
 	config := ssh.ClientConfig{
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signers...)},
+		Auth:            []ssh.AuthMethod{ssh.PublicKeysCallback(sshAgent.Signers)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		User:            "somebody",
 	}
@@ -60,11 +57,9 @@ as Pageant, but over a `Unix domain socket` instead of shared memory.
 The path to this socket is exposed through the environment variable
 `SSH_AUTH_SOCK`.
 
-Replace the connection to Pageant with one to the socket:
 ```golang
-	// instead of this:
 	agentConn, err := pageant.NewConn()
-	// do this:
+	// works like
 	agentConn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK"))
 ```
 
@@ -77,12 +72,10 @@ The `ssh-agent` daemon of `OpenSSH for Windows` used `Named Pipe` `\\.\pipe\open
 The `sshd` daemon of `OpenSSH for Windows` used `Unix domain socket` like `/tmp/somepath`<br>
 for some versions of Windows it works: look `sc query afunix`
 
-Replace the connection to Pageant with one to the socket:
 ```golang
-	// instead of this:
 	agentConn, err := pageant.NewConn()
-	// do this:
-	agentConn, err := winio.DialPipe(os.Getenv("SSH_AUTH_SOCK"), nil)
+	// works like
+	agentConn, err := winio.DialPipe(`\\.\pipe\openssh-ssh-agent`, nil)
 ```
 
 
