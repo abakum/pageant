@@ -66,11 +66,10 @@ The path to this socket is exposed through the environment variable
 ## OpenSSH for Windows Alternatives
 
 The `ssh-add`, `ssh` commands of `OpenSSH for Windows` implements the same [SSH agent protocol][ssh-agent]
-as Unix/Linux, but over a `Named Pipe` instead of `Unix domain socket`.<br>
-The path to this pipe is exposed through the environment variable `SSH_AUTH_SOCK` like `\\.\pipe\somepath`<br>
+as Unix/Linux, but over a `Named Pipe` instead of `Unix domain socket`.
 The `ssh-agent` daemon of `OpenSSH for Windows` used `Named Pipe` `\\.\pipe\openssh-ssh-agent`<br>
 The `sshd` daemon of `OpenSSH for Windows` used `Unix domain socket` like `/tmp/somepath`<br>
-for some versions of Windows it works: look `sc query afunix`
+for some versions of Windows it works: look `sc query afunix`.
 
 ```golang
 	agentConn, err := pageant.NewConn()
